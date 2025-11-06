@@ -12,6 +12,7 @@ function initDatabase() {
     listings: [],
     messages: [],
     settings: {
+      sources: { extraUrls: [] },
       searchAreas: [],
       autoReply: {
         enabled: false,

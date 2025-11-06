@@ -91,6 +91,13 @@ router.put('/sources', (req, res) => {
   db.get('settings')
     .assign({ sources: { extraUrls: req.body.extraUrls || [] } })
     .write();
+  // Restart monitoring so new sources take effect immediately
+  try {
+    stopMonitoring();
+    startMonitoring();
+  } catch (e) {
+    console.warn('Warning restarting monitoring after sources update:', e.message);
+  }
   res.json({ success: true });
 });
 

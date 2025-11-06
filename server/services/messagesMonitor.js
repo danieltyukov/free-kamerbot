@@ -28,9 +28,16 @@ async function fetchKamernetMessages() {
   const settings = db.get('settings').value();
 
   if (!settings.credentials.kamernet.email || !settings.credentials.kamernet.password) {
+    console.log('⚠️  Kamernet messages: credentials not configured');
     return [];
   }
 
+  // Kamernet login URL changed - disabling for now
+  // TODO: Update login flow when Kamernet auth structure is confirmed
+  console.log('⚠️  Kamernet messages monitoring temporarily disabled (login flow needs update)');
+  return [];
+
+  /* Commented out until login URL is fixed
   const headless = process.env.AUTO_REPLY_HEADLESS === 'false' ? false : 'new';
   const executablePath = resolveExecutablePath();
 
@@ -39,7 +46,7 @@ async function fetchKamernetMessages() {
     browser = await puppeteer.launch({ headless, executablePath, args: ['--no-sandbox', '--disable-setuid-sandbox'] });
     const page = await browser.newPage();
 
-    // Login
+    // Login - NOTE: This URL returns 404 now, needs investigation
     await page.goto('https://kamernet.nl/en/login', { waitUntil: 'networkidle2', timeout: 30000 });
     await page.type('input[name="email"], input[type="email"]', settings.credentials.kamernet.email, { delay: 10 });
     await page.type('input[name="password"], input[type="password"]', settings.credentials.kamernet.password, { delay: 10 });
@@ -91,6 +98,7 @@ async function fetchKamernetMessages() {
     console.error('Kamernet messages check error:', err.message);
     return [];
   }
+  */
 }
 
 module.exports = { fetchKamernetMessages };

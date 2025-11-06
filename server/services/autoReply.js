@@ -21,6 +21,11 @@ async function autoReply(listing) {
     return { success: false, message: 'Credentials not configured' };
   }
   
+  // Kamernet login URL changed - auto-reply temporarily disabled
+  console.log('⚠️  Kamernet auto-reply temporarily disabled (login flow needs update)');
+  return { success: false, message: 'Auto-reply disabled - login URL changed' };
+  
+  /* Commented out until login URL is fixed
   try {
     console.log(`🤖 Auto-replying to: ${listing.title}`);
 
@@ -56,7 +61,7 @@ async function autoReply(listing) {
     
     const page = await browser.newPage();
     
-    // Login to Kamernet
+    // Login to Kamernet - NOTE: Login URL changed, needs update
     await page.goto('https://kamernet.nl/en/login', { waitUntil: 'networkidle2' });
     
     // Fill login form
@@ -92,7 +97,7 @@ async function autoReply(listing) {
       page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 10000 }).catch(() => {})
     ]);
     
-  await browser.close();
+    await browser.close();
     
     // Mark as replied
     db.get('repliedListings').push(listing.id).write();
@@ -104,6 +109,7 @@ async function autoReply(listing) {
     console.error(`❌ Auto-reply error for ${listing.id}:`, error.message);
     return { success: false, message: error.message };
   }
+  */
 }
 
 module.exports = {

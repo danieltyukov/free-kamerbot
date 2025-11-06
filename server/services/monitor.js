@@ -47,7 +47,7 @@ async function checkNewListings(platform, scraper) {
           trulyNewListings.forEach(listing => {
             sendNotification({
               title: `New listing on ${platform}`,
-              body: `${listing.title} - €${listing.price}`,
+              body: listing.price ? `${listing.title} - €${listing.price}` : listing.title,
               url: listing.url
             });
           });
