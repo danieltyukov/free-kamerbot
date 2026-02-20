@@ -4,14 +4,12 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
 import IconButton from '@mui/material/IconButton';
 import Badge from '@mui/material/Badge';
 import DeleteIcon from '@mui/icons-material/Delete';
 import MailIcon from '@mui/icons-material/Mail';
 import DraftsIcon from '@mui/icons-material/Drafts';
+import SyncIcon from '@mui/icons-material/Sync';
 
 function Messages() {
   const [messages, setMessages] = useState([]);
@@ -58,63 +56,101 @@ function Messages() {
     }
   };
 
+  const unreadCount = messages.filter(m => !m.read).length;
+
   return (
     <Box>
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Typography variant="h4" gutterBottom>
-          Messages ({messages.length})
-        </Typography>
-        <Button variant="outlined" size="small" onClick={syncNow}>Sync Now</Button>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+        <Box>
+          <Typography variant="h4" gutterBottom sx={{ mb: 0 }}>
+            Messages
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {messages.length} total &middot; {unreadCount} unread
+          </Typography>
+        </Box>
+        <Button
+          variant="contained"
+          size="small"
+          startIcon={<SyncIcon />}
+          onClick={syncNow}
+        >
+          Sync Now
+        </Button>
       </Box>
 
-      <Paper>
-        <List>
-          {messages.map((message) => (
-            <ListItem
-              key={message.id}
-              sx={{
-                borderBottom: '1px solid #e0e0e0',
-                bgcolor: message.read ? 'transparent' : '#e3f2fd'
-              }}
-              secondaryAction={
-                <IconButton edge="end" onClick={() => deleteMessage(message.id)}>
-                  <DeleteIcon />
-                </IconButton>
-              }
-            >
-              <IconButton onClick={() => markAsRead(message.id)} sx={{ mr: 2 }}>
-                {message.read ? <DraftsIcon /> : <Badge color="error" variant="dot"><MailIcon /></Badge>}
-              </IconButton>
-              
-              <ListItemText
-                primary={message.from || 'Landlord'}
-                secondary={
-                  <>
-                    <Typography variant="body2" component="span">
-                      {message.subject || message.content}
-                    </Typography>
-                    <br />
-                    <Typography variant="caption" color="text.secondary">
-                      {new Date(message.timestamp).toLocaleString()}
-                    </Typography>
-                  </>
-                }
-              />
-            </ListItem>
-          ))}
-        </List>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+        {messages.map((message) => (
+          <Paper
+            key={message.id}
+            sx={{
+              p: 2,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 2,
+              transition: 'all 0.2s ease',
+              ...(!message.read && {
+                borderLeft: '3px solid #0f766e',
+                backgroundColor: 'rgba(15, 118, 110, 0.04)',
+              }),
+              '&:hover': {
+                boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+              },
+            }}
+          >
+            <IconButton onClick={() => markAsRead(message.id)} sx={{ flexShrink: 0 }}>
+              {message.read ? (
+                <DraftsIcon sx={{ color: '#94a3b8' }} />
+              ) : (
+                <Badge color="error" variant="dot">
+                  <MailIcon sx={{ color: '#0f766e' }} />
+                </Badge>
+              )}
+            </IconButton>
 
-        {messages.length === 0 && (
-          <Box sx={{ p: 5, textAlign: 'center' }}>
-            <Typography variant="h6" color="text.secondary">
-              No messages yet
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Messages from landlords will appear here
-            </Typography>
-          </Box>
-        )}
-      </Paper>
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <Typography variant="subtitle2" sx={{ fontWeight: message.read ? 400 : 600 }}>
+                {message.from || 'Landlord'}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" noWrap>
+                {message.subject || message.content}
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                {new Date(message.timestamp).toLocaleString()}
+              </Typography>
+            </Box>
+
+            <IconButton
+              onClick={() => deleteMessage(message.id)}
+              sx={{
+                flexShrink: 0,
+                '&:hover': { color: '#ef4444' },
+              }}
+            >
+              <DeleteIcon />
+            </IconButton>
+          </Paper>
+        ))}
+      </Box>
+
+      {messages.length === 0 && (
+        <Box sx={{ textAlign: 'center', py: 8 }}>
+          <MailIcon sx={{ fontSize: 64, color: '#cbd5e1', mb: 2 }} />
+          <Typography variant="h6" color="text.secondary" gutterBottom>
+            No messages yet
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            Messages from landlords will appear here
+          </Typography>
+          <Button
+            variant="contained"
+            startIcon={<SyncIcon />}
+            onClick={syncNow}
+          >
+            Sync Now
+          </Button>
+        </Box>
+      )}
     </Box>
   );
 }

@@ -13,12 +13,14 @@ import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import Paper from '@mui/material/Paper';
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import DeleteIcon from '@mui/icons-material/Delete';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import SearchIcon from '@mui/icons-material/Search';
 import ReplyIcon from '@mui/icons-material/Reply';
+import SearchOffIcon from '@mui/icons-material/SearchOff';
 
 function Listings() {
   const [listings, setListings] = useState([]);
@@ -62,7 +64,7 @@ function Listings() {
     }
   };
 
-  
+
 
   const toggleFavorite = async (id) => {
     try {
@@ -110,7 +112,7 @@ function Listings() {
         Listings ({filteredListings.length})
       </Typography>
 
-      <Box sx={{ mb: 3 }}>
+      <Paper sx={{ p: 2.5, mb: 3 }}>
         <TextField
           fullWidth
           variant="outlined"
@@ -135,10 +137,9 @@ function Listings() {
         >
           <ToggleButton value="all">All</ToggleButton>
           <ToggleButton value="Kamernet">Kamernet</ToggleButton>
-          <ToggleButton value="Funda">Funda</ToggleButton>
           <ToggleButton value="Pararius">Pararius</ToggleButton>
         </ToggleButtonGroup>
-      </Box>
+      </Paper>
 
       <Grid container spacing={2}>
         {filteredListings.map((listing) => (
@@ -146,28 +147,74 @@ function Listings() {
             <Card
               sx={{
                 position: 'relative',
-                border: !listing.read ? '2px solid #1976d2' : '1px solid #e0e0e0'
+                cursor: 'pointer',
+                transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                '&:hover': {
+                  transform: 'translateY(-4px)',
+                  boxShadow: '0 12px 36px rgba(0,0,0,0.12)',
+                },
+                // Unread indicator dot
+                ...(!listing.read && {
+                  '&::before': {
+                    content: '""',
+                    position: 'absolute',
+                    top: 12,
+                    left: 12,
+                    width: 10,
+                    height: 10,
+                    borderRadius: '50%',
+                    backgroundColor: '#0f766e',
+                    zIndex: 2,
+                    boxShadow: '0 0 0 3px rgba(15, 118, 110, 0.2)',
+                  },
+                }),
               }}
               onClick={() => markAsRead(listing.id)}
             >
               {listing.imageUrl && (
                 <Box
-                  component="img"
-                  src={listing.imageUrl}
-                  alt={listing.title}
-                  sx={{ width: '100%', height: 200, objectFit: 'cover' }}
-                />
+                  sx={{
+                    position: 'relative',
+                    overflow: 'hidden',
+                    '&:hover img': {
+                      transform: 'scale(1.05)',
+                    },
+                  }}
+                >
+                  <Box
+                    component="img"
+                    src={listing.imageUrl}
+                    alt={listing.title}
+                    sx={{
+                      width: '100%',
+                      height: 200,
+                      objectFit: 'cover',
+                      transition: 'transform 0.4s ease',
+                    }}
+                  />
+                  {/* Bottom gradient overlay */}
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      height: 60,
+                      background: 'linear-gradient(transparent, rgba(0,0,0,0.3))',
+                    }}
+                  />
+                </Box>
               )}
-              
+
               <CardContent>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                   <Chip
                     label={listing.platform}
                     size="small"
-                    color={
-                      listing.platform === 'Kamernet' ? 'primary' :
-                      listing.platform === 'Funda' ? 'secondary' : 'default'
-                    }
+                    sx={{
+                      backgroundColor: listing.platform === 'Kamernet' ? '#0f766e' : '#6366f1',
+                      color: '#fff',
+                    }}
                   />
                   <IconButton
                     size="small"
@@ -192,8 +239,8 @@ function Listings() {
                   📏 {listing.size}
                 </Typography>
 
-                <Typography variant="h6" color="primary">
-                  €{listing.price}/month
+                <Typography variant="h6" color="primary" sx={{ fontWeight: 700 }}>
+                  &euro;{listing.price}/month
                 </Typography>
 
                 <Typography variant="caption" color="text.secondary">
@@ -211,7 +258,7 @@ function Listings() {
                 >
                   View
                 </Button>
-                
+
                 {listing.platform === 'Kamernet' && (
                   <Button
                     size="small"
@@ -241,9 +288,13 @@ function Listings() {
       </Grid>
 
       {filteredListings.length === 0 && (
-        <Box sx={{ textAlign: 'center', py: 5 }}>
+        <Box sx={{ textAlign: 'center', py: 8 }}>
+          <SearchOffIcon sx={{ fontSize: 64, color: '#cbd5e1', mb: 2 }} />
           <Typography variant="h6" color="text.secondary">
             No listings found
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Try adjusting your search or filters
           </Typography>
         </Box>
       )}

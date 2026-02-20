@@ -10,6 +10,44 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Grid';
 import Alert from '@mui/material/Alert';
+import LockIcon from '@mui/icons-material/Lock';
+import ReplyIcon from '@mui/icons-material/Reply';
+import TuneIcon from '@mui/icons-material/Tune';
+import TimerIcon from '@mui/icons-material/Timer';
+import LinkIcon from '@mui/icons-material/Link';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+
+function SectionHeader({ icon, title, subtitle }) {
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2.5 }}>
+      <Box
+        sx={{
+          width: 42,
+          height: 42,
+          borderRadius: 2.5,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: 'rgba(15, 118, 110, 0.08)',
+          color: '#0f766e',
+          flexShrink: 0,
+        }}
+      >
+        {icon}
+      </Box>
+      <Box>
+        <Typography variant="h6" sx={{ fontWeight: 600, lineHeight: 1.2 }}>
+          {title}
+        </Typography>
+        {subtitle && (
+          <Typography variant="body2" color="text.secondary">
+            {subtitle}
+          </Typography>
+        )}
+      </Box>
+    </Box>
+  );
+}
 
 function Settings() {
   const [settings, setSettings] = useState(null);
@@ -18,7 +56,7 @@ function Settings() {
   const [filters, setFilters] = useState({ minPrice: 0, maxPrice: 2000, minSize: 0, maxSize: 200 });
   const [monitoring, setMonitoring] = useState({
     kamernet: { enabled: true, interval: 5 },
-    funda: { enabled: true, interval: 10 },
+
     pararius: { enabled: true, interval: 10 },
     messages: { enabled: true, interval: 5 }
   });
@@ -40,7 +78,7 @@ function Settings() {
       setFilters(data.filters);
       setMonitoring({
         kamernet: data.monitoring?.kamernet || { enabled: true, interval: 3 },
-        funda: data.monitoring?.funda || { enabled: true, interval: 3 },
+
         pararius: data.monitoring?.pararius || { enabled: true, interval: 3 },
         messages: data.monitoring?.messages || { enabled: true, interval: 5 }
       });
@@ -78,28 +116,21 @@ function Settings() {
   }
 
   return (
-    <Box>
+    <Box sx={{ pb: 10 }}>
       <Typography variant="h4" gutterBottom>
         Settings
       </Typography>
 
-      {saved && (
-        <Alert severity="success" sx={{ mb: 2 }}>
-          Settings saved successfully!
-        </Alert>
-      )}
-
       <Grid container spacing={3}>
-        {/* Kamernet Credentials */}
-        <Grid item xs={12}>
-          <Paper sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Kamernet Credentials
-            </Typography>
-            <Typography variant="body2" color="text.secondary" gutterBottom>
-              Required for automatic replies to Kamernet listings
-            </Typography>
-            
+        {/* Row 1: Credentials + Auto-Reply */}
+        <Grid item xs={12} md={6}>
+          <Paper sx={{ p: 3, height: '100%' }}>
+            <SectionHeader
+              icon={<LockIcon />}
+              title="Kamernet Credentials"
+              subtitle="Required for automatic replies"
+            />
+
             <TextField
               fullWidth
               label="Email"
@@ -108,7 +139,7 @@ function Settings() {
               onChange={(e) => setKamernet({ ...kamernet, email: e.target.value })}
               margin="normal"
             />
-            
+
             <TextField
               fullWidth
               label="Password"
@@ -121,13 +152,14 @@ function Settings() {
           </Paper>
         </Grid>
 
-        {/* Auto-Reply */}
-        <Grid item xs={12}>
-          <Paper sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Automatic Reply
-            </Typography>
-            
+        <Grid item xs={12} md={6}>
+          <Paper sx={{ p: 3, height: '100%' }}>
+            <SectionHeader
+              icon={<ReplyIcon />}
+              title="Automatic Reply"
+              subtitle="Auto-respond to new Kamernet listings"
+            />
+
             <FormControlLabel
               control={
                 <Switch
@@ -137,7 +169,7 @@ function Settings() {
               }
               label="Enable automatic replies on Kamernet"
             />
-            
+
             <TextField
               fullWidth
               label="Reply Message Template"
@@ -151,13 +183,15 @@ function Settings() {
           </Paper>
         </Grid>
 
-        {/* Filters */}
-        <Grid item xs={12}>
-          <Paper sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Listing Filters
-            </Typography>
-            
+        {/* Row 2: Filters + Notifications */}
+        <Grid item xs={12} md={6}>
+          <Paper sx={{ p: 3, height: '100%' }}>
+            <SectionHeader
+              icon={<TuneIcon />}
+              title="Listing Filters"
+              subtitle="Set your price and size preferences"
+            />
+
             <Grid container spacing={2}>
               <Grid item xs={6}>
                 <TextField
@@ -199,17 +233,48 @@ function Settings() {
           </Paper>
         </Grid>
 
-        {/* Monitoring */}
+        <Grid item xs={12} md={6}>
+          <Paper sx={{ p: 3, height: '100%' }}>
+            <SectionHeader
+              icon={<NotificationsIcon />}
+              title="Notifications"
+              subtitle="Control how you get notified"
+            />
+
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={notifications.enabled}
+                  onChange={(e) => setNotifications({ ...notifications, enabled: e.target.checked })}
+                />
+              }
+              label="Enable browser notifications"
+              sx={{ display: 'block', mb: 1 }}
+            />
+
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={notifications.mobile}
+                  onChange={(e) => setNotifications({ ...notifications, mobile: e.target.checked })}
+                />
+              }
+              label="Enable mobile notifications (PWA)"
+              sx={{ display: 'block' }}
+            />
+          </Paper>
+        </Grid>
+
+        {/* Row 3: Monitoring (full width) */}
         <Grid item xs={12}>
           <Paper sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Monitoring Intervals
-            </Typography>
-            <Typography variant="body2" color="text.secondary" gutterBottom>
-              How often to check for new listings (in minutes)
-            </Typography>
-            
-            <Box sx={{ mt: 2 }}>
+            <SectionHeader
+              icon={<TimerIcon />}
+              title="Monitoring Intervals"
+              subtitle="How often to check for new listings (in minutes)"
+            />
+
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', py: 1.5 }}>
               <FormControlLabel
                 control={
                   <Switch
@@ -223,7 +288,7 @@ function Settings() {
                 label="Kamernet"
               />
               <TextField
-                label="Interval (minutes)"
+                label="Interval (min)"
                 type="number"
                 value={monitoring.kamernet.interval}
                 onChange={(e) => setMonitoring({
@@ -231,37 +296,13 @@ function Settings() {
                   kamernet: { ...monitoring.kamernet, interval: parseInt(e.target.value) || 1 }
                 })}
                 size="small"
-                sx={{ ml: 2, width: 150 }}
+                sx={{ width: 130 }}
               />
             </Box>
 
-            <Box sx={{ mt: 2 }}>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={monitoring.funda.enabled}
-                    onChange={(e) => setMonitoring({
-                      ...monitoring,
-                      funda: { ...monitoring.funda, enabled: e.target.checked }
-                    })}
-                  />
-                }
-                label="Funda"
-              />
-              <TextField
-                label="Interval (minutes)"
-                type="number"
-                value={monitoring.funda.interval}
-                onChange={(e) => setMonitoring({
-                  ...monitoring,
-                  funda: { ...monitoring.funda, interval: parseInt(e.target.value) || 1 }
-                })}
-                size="small"
-                sx={{ ml: 2, width: 150 }}
-              />
-            </Box>
+            <Divider />
 
-            <Box sx={{ mt: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', py: 1.5 }}>
               <FormControlLabel
                 control={
                   <Switch
@@ -275,7 +316,7 @@ function Settings() {
                 label="Pararius"
               />
               <TextField
-                label="Interval (minutes)"
+                label="Interval (min)"
                 type="number"
                 value={monitoring.pararius.interval}
                 onChange={(e) => setMonitoring({
@@ -283,15 +324,13 @@ function Settings() {
                   pararius: { ...monitoring.pararius, interval: parseInt(e.target.value) || 1 }
                 })}
                 size="small"
-                sx={{ ml: 2, width: 150 }}
+                sx={{ width: 130 }}
               />
             </Box>
 
-            <Divider sx={{ my: 2 }} />
-            <Typography variant="subtitle1" gutterBottom>
-              Messages (Kamernet)
-            </Typography>
-            <Box sx={{ mt: 1 }}>
+            <Divider />
+
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', py: 1.5 }}>
               <FormControlLabel
                 control={
                   <Switch
@@ -302,10 +341,10 @@ function Settings() {
                     })}
                   />
                 }
-                label="Monitor new messages"
+                label="Messages (Kamernet)"
               />
               <TextField
-                label="Interval (minutes)"
+                label="Interval (min)"
                 type="number"
                 value={monitoring.messages.interval}
                 onChange={(e) => setMonitoring({
@@ -313,73 +352,60 @@ function Settings() {
                   messages: { ...monitoring.messages, interval: parseInt(e.target.value) || 1 }
                 })}
                 size="small"
-                sx={{ ml: 2, width: 150 }}
+                sx={{ width: 130 }}
               />
             </Box>
           </Paper>
         </Grid>
 
-        {/* Extra agency/sources URLs */}
+        {/* Row 4: Extra Sources (full width) */}
         <Grid item xs={12}>
           <Paper sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Extra Listing Sources (Agencies)
-            </Typography>
-            <Typography variant="body2" color="text.secondary" gutterBottom>
-              Paste additional listing URLs (one per line). We'll try to monitor these too.
-            </Typography>
+            <SectionHeader
+              icon={<LinkIcon />}
+              title="Extra Listing Sources"
+              subtitle="Paste additional listing URLs (one per line)"
+            />
             <TextField
               fullWidth
               multiline
               minRows={4}
               value={(sources.extraUrls || []).join('\n')}
               onChange={(e) => setSources({ extraUrls: e.target.value.split('\n').map(s => s.trim()).filter(Boolean) })}
-              placeholder="https://www.pararius.com/apartments/amsterdam\nhttps://www.funda.nl/en/huur/amsterdam/"
+              placeholder="https://www.pararius.com/apartments/amsterdam"
             />
           </Paper>
-        </Grid>
-
-        {/* Notifications */}
-        <Grid item xs={12}>
-          <Paper sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Notifications
-            </Typography>
-            
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={notifications.enabled}
-                  onChange={(e) => setNotifications({ ...notifications, enabled: e.target.checked })}
-                />
-              }
-              label="Enable browser notifications"
-            />
-            
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={notifications.mobile}
-                  onChange={(e) => setNotifications({ ...notifications, mobile: e.target.checked })}
-                />
-              }
-              label="Enable mobile notifications (PWA)"
-            />
-          </Paper>
-        </Grid>
-
-        {/* Save Button */}
-        <Grid item xs={12}>
-          <Button
-            variant="contained"
-            size="large"
-            onClick={saveSettings}
-            fullWidth
-          >
-            Save Settings
-          </Button>
         </Grid>
       </Grid>
+
+      {/* Sticky save bar */}
+      <Paper
+        elevation={4}
+        sx={{
+          position: 'sticky',
+          bottom: 16,
+          mt: 3,
+          p: 2,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 2,
+          backgroundColor: '#fff',
+        }}
+      >
+        <Button
+          variant="contained"
+          size="large"
+          onClick={saveSettings}
+          sx={{ minWidth: 160 }}
+        >
+          Save Settings
+        </Button>
+        {saved && (
+          <Alert severity="success" sx={{ flex: 1, py: 0 }}>
+            Settings saved successfully!
+          </Alert>
+        )}
+      </Paper>
     </Box>
   );
 }
