@@ -20,11 +20,15 @@ async function checkNewListings(platform, scraper) {
     
     if (newListings && newListings.length > 0) {
       const existingListings = db.get('listings').value();
-      const existingIds = existingListings.map(l => l.id);
-      
-      const trulyNewListings = newListings.filter(listing => 
-        !existingIds.includes(listing.id)
-      );
+      const existingIds = new Set(existingListings.map(l => l.id));
+
+      // Deduplicate: exclude already-stored IDs AND duplicates within the batch
+      const seenInBatch = new Set();
+      const trulyNewListings = newListings.filter(listing => {
+        if (existingIds.has(listing.id) || seenInBatch.has(listing.id)) return false;
+        seenInBatch.add(listing.id);
+        return true;
+      });
       
       if (trulyNewListings.length > 0) {
         console.log(`✨ Found ${trulyNewListings.length} new listings on ${platform}`);

@@ -6,7 +6,14 @@ const { getDb } = require('../utils/database');
 router.get('/stats/summary', (req, res) => {
   try {
     const db = getDb();
-    const listings = db.get('listings').value();
+    const allListings = db.get('listings').value();
+    // Deduplicate by ID
+    const seen = new Set();
+    const listings = allListings.filter(l => {
+      if (seen.has(l.id)) return false;
+      seen.add(l.id);
+      return true;
+    });
 
     const now = new Date();
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
@@ -35,7 +42,14 @@ router.get('/', (req, res) => {
   try {
     const db = getDb();
     const listings = db.get('listings').value();
-    res.json(listings);
+    // Deduplicate by ID (keep first occurrence) to prevent React key collisions
+    const seen = new Set();
+    const unique = listings.filter(l => {
+      if (seen.has(l.id)) return false;
+      seen.add(l.id);
+      return true;
+    });
+    res.json(unique);
   } catch (error) {
     console.error('Error getting listings:', error.message);
     res.status(500).json({ error: 'Failed to get listings' });

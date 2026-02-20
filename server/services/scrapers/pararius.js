@@ -30,7 +30,11 @@ async function scrapePararius(settings) {
         const link = $elem.find('a').first().attr('href');
         const url = link?.startsWith('http') ? link : `https://www.pararius.com${link}`;
         
-        const id = `pararius-${url.split('/').filter(Boolean).pop() || Date.now()}`;
+        // URL pattern: /apartment-for-rent/{city}/{hash}/{street}
+        // Use hash + street for unique ID (street alone causes collisions)
+        const urlParts = url.split('/').filter(Boolean);
+        const slug = urlParts.slice(-2).join('-') || Date.now().toString();
+        const id = `pararius-${slug}`;
         
         if (title && price) {
           listings.push({
