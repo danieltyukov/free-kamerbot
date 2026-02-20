@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import IconButton from '@mui/material/IconButton';
@@ -40,102 +40,110 @@ const theme = createTheme({
   },
 });
 
-function App() {
+const menuItems = [
+  { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
+  { text: 'Listings', icon: <HomeIcon />, path: '/listings', hasBadge: true },
+  { text: 'Messages', icon: <MessageIcon />, path: '/messages' },
+  { text: 'Search Area', icon: <MapIcon />, path: '/search-area' },
+  { text: 'Settings', icon: <SettingsIcon />, path: '/settings' },
+];
+
+function AppContent() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const navigate = useNavigate();
 
   useEffect(() => {
     requestNotificationPermission();
-    
-    // Fetch unread count
+
     fetch('/api/listings')
       .then(res => res.json())
       .then(data => {
-        const unread = data.filter(l => !l.read).length;
-        setUnreadCount(unread);
+        if (Array.isArray(data)) {
+          setUnreadCount(data.filter(l => !l.read).length);
+        }
       })
       .catch(console.error);
   }, []);
 
-  const menuItems = [
-    { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
-    { text: 'Listings', icon: <HomeIcon />, path: '/listings', badge: unreadCount },
-    { text: 'Messages', icon: <MessageIcon />, path: '/messages' },
-    { text: 'Search Area', icon: <MapIcon />, path: '/search-area' },
-    { text: 'Settings', icon: <SettingsIcon />, path: '/settings' },
-  ];
+  const handleNavigation = (path) => {
+    navigate(path);
+    setDrawerOpen(false);
+  };
 
+  return (
+    <Box sx={{ display: 'flex' }}>
+      <AppBar position="fixed">
+        <Toolbar>
+          <IconButton
+            color="inherit"
+            edge="start"
+            onClick={() => setDrawerOpen(!drawerOpen)}
+            sx={{ mr: 2 }}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            FreeKamerBot
+          </Typography>
+          <IconButton color="inherit">
+            <Badge badgeContent={unreadCount} color="error">
+              <NotificationsIcon />
+            </Badge>
+          </IconButton>
+        </Toolbar>
+      </AppBar>
+
+      <Drawer
+        anchor="left"
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+      >
+        <Box sx={{ width: 250, mt: 8 }}>
+          <List>
+            {menuItems.map((item) => (
+              <ListItemButton
+                key={item.text}
+                onClick={() => handleNavigation(item.path)}
+              >
+                <ListItemIcon>
+                  {item.hasBadge && unreadCount > 0 ? (
+                    <Badge badgeContent={unreadCount} color="error">
+                      {item.icon}
+                    </Badge>
+                  ) : (
+                    item.icon
+                  )}
+                </ListItemIcon>
+                <ListItemText primary={item.text} />
+              </ListItemButton>
+            ))}
+          </List>
+        </Box>
+      </Drawer>
+
+      <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 8 }}>
+        <Container maxWidth="xl">
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/listings" element={<Listings />} />
+            <Route path="/messages" element={<Messages />} />
+            <Route path="/search-area" element={<SearchArea />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Container>
+      </Box>
+    </Box>
+  );
+}
+
+function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
-        <Box sx={{ display: 'flex' }}>
-          <AppBar position="fixed">
-            <Toolbar>
-              <IconButton
-                color="inherit"
-                edge="start"
-                onClick={() => setDrawerOpen(!drawerOpen)}
-                sx={{ mr: 2 }}
-              >
-                <MenuIcon />
-              </IconButton>
-              <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                🏠 FreeKamerBot
-              </Typography>
-              <IconButton color="inherit">
-                <Badge badgeContent={unreadCount} color="error">
-                  <NotificationsIcon />
-                </Badge>
-              </IconButton>
-            </Toolbar>
-          </AppBar>
-
-          <Drawer
-            anchor="left"
-            open={drawerOpen}
-            onClose={() => setDrawerOpen(false)}
-          >
-            <Box sx={{ width: 250, mt: 8 }}>
-              <List>
-                {menuItems.map((item) => (
-                  <ListItem
-                    button
-                    key={item.text}
-                    onClick={() => {
-                      window.location.href = item.path;
-                      setDrawerOpen(false);
-                    }}
-                  >
-                    <ListItemIcon>
-                      {item.badge ? (
-                        <Badge badgeContent={item.badge} color="error">
-                          {item.icon}
-                        </Badge>
-                      ) : (
-                        item.icon
-                      )}
-                    </ListItemIcon>
-                    <ListItemText primary={item.text} />
-                  </ListItem>
-                ))}
-              </List>
-            </Box>
-          </Drawer>
-
-          <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 8 }}>
-            <Container maxWidth="xl">
-              <Routes>
-                <Route path="/" element={<Dashboard />} />
-                <Route path="/listings" element={<Listings />} />
-                <Route path="/messages" element={<Messages />} />
-                <Route path="/search-area" element={<SearchArea />} />
-                <Route path="/settings" element={<Settings />} />
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </Container>
-          </Box>
-        </Box>
+        <AppContent />
       </Router>
     </ThemeProvider>
   );

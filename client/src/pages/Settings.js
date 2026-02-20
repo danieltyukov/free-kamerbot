@@ -60,18 +60,16 @@ function Settings() {
         monitoring,
         notifications
       });
-  // Update extra sources
-  await axios.put('/api/settings/sources', sources);
+
+      await axios.put('/api/settings/sources', sources);
 
       // Update Kamernet credentials separately
       await axios.put('/api/settings/credentials/kamernet', kamernet);
 
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
-      alert('Settings saved! Monitoring will restart with new settings.');
     } catch (error) {
       console.error('Error saving settings:', error);
-      alert('Error saving settings');
     }
   };
 
@@ -167,7 +165,7 @@ function Settings() {
                   label="Min Price (€)"
                   type="number"
                   value={filters.minPrice}
-                  onChange={(e) => setFilters({ ...filters, minPrice: parseInt(e.target.value) })}
+                  onChange={(e) => setFilters({ ...filters, minPrice: parseInt(e.target.value) || 0 })}
                 />
               </Grid>
               <Grid item xs={6}>
@@ -176,7 +174,7 @@ function Settings() {
                   label="Max Price (€)"
                   type="number"
                   value={filters.maxPrice}
-                  onChange={(e) => setFilters({ ...filters, maxPrice: parseInt(e.target.value) })}
+                  onChange={(e) => setFilters({ ...filters, maxPrice: parseInt(e.target.value) || 0 })}
                 />
               </Grid>
               <Grid item xs={6}>
@@ -185,7 +183,7 @@ function Settings() {
                   label="Min Size (m²)"
                   type="number"
                   value={filters.minSize}
-                  onChange={(e) => setFilters({ ...filters, minSize: parseInt(e.target.value) })}
+                  onChange={(e) => setFilters({ ...filters, minSize: parseInt(e.target.value) || 0 })}
                 />
               </Grid>
               <Grid item xs={6}>
@@ -194,7 +192,7 @@ function Settings() {
                   label="Max Size (m²)"
                   type="number"
                   value={filters.maxSize}
-                  onChange={(e) => setFilters({ ...filters, maxSize: parseInt(e.target.value) })}
+                  onChange={(e) => setFilters({ ...filters, maxSize: parseInt(e.target.value) || 0 })}
                 />
               </Grid>
             </Grid>
@@ -230,7 +228,7 @@ function Settings() {
                 value={monitoring.kamernet.interval}
                 onChange={(e) => setMonitoring({
                   ...monitoring,
-                  kamernet: { ...monitoring.kamernet, interval: parseInt(e.target.value) }
+                  kamernet: { ...monitoring.kamernet, interval: parseInt(e.target.value) || 1 }
                 })}
                 size="small"
                 sx={{ ml: 2, width: 150 }}
@@ -256,7 +254,7 @@ function Settings() {
                 value={monitoring.funda.interval}
                 onChange={(e) => setMonitoring({
                   ...monitoring,
-                  funda: { ...monitoring.funda, interval: parseInt(e.target.value) }
+                  funda: { ...monitoring.funda, interval: parseInt(e.target.value) || 1 }
                 })}
                 size="small"
                 sx={{ ml: 2, width: 150 }}
@@ -282,7 +280,7 @@ function Settings() {
                 value={monitoring.pararius.interval}
                 onChange={(e) => setMonitoring({
                   ...monitoring,
-                  pararius: { ...monitoring.pararius, interval: parseInt(e.target.value) }
+                  pararius: { ...monitoring.pararius, interval: parseInt(e.target.value) || 1 }
                 })}
                 size="small"
                 sx={{ ml: 2, width: 150 }}
@@ -312,7 +310,7 @@ function Settings() {
                 value={monitoring.messages.interval}
                 onChange={(e) => setMonitoring({
                   ...monitoring,
-                  messages: { ...monitoring.messages, interval: parseInt(e.target.value) }
+                  messages: { ...monitoring.messages, interval: parseInt(e.target.value) || 1 }
                 })}
                 size="small"
                 sx={{ ml: 2, width: 150 }}

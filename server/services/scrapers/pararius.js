@@ -30,7 +30,7 @@ async function scrapePararius(settings) {
         const link = $elem.find('a').first().attr('href');
         const url = link?.startsWith('http') ? link : `https://www.pararius.com${link}`;
         
-  const id = `pararius-${url.split('/').filter(Boolean).pop() || Date.now()}`;
+        const id = `pararius-${url.split('/').filter(Boolean).pop() || Date.now()}`;
         
         if (title && price) {
           listings.push({

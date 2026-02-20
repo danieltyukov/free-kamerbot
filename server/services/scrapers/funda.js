@@ -17,6 +17,7 @@ const cheerio = require('cheerio');
 async function scrapeFunda(settings) {
   try {
     const url = process.env.FUNDA_SEARCH_URL || 'https://www.funda.nl/en/zoeken/huur?selected_area=%5B%22nl%22%5D';
+    console.log('Funda: attempting scrape (note: may be blocked by anti-bot protection)');
     
     const response = await axios.get(url, {
       headers: {

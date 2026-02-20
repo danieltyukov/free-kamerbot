@@ -34,7 +34,10 @@ function Dashboard() {
       ]);
       
       setStats(statsRes.data);
-      setRecentListings(listingsRes.data.slice(0, 5));
+      const sorted = [...(listingsRes.data || [])].sort(
+        (a, b) => new Date(b.discovered) - new Date(a.discovered)
+      );
+      setRecentListings(sorted.slice(0, 5));
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
     }
@@ -54,7 +57,7 @@ function Dashboard() {
     { title: 'Total Listings', value: stats.total, icon: <HomeIcon />, color: '#1976d2' },
     { title: 'Unread', value: stats.unread, icon: <MessageIcon />, color: '#dc004e' },
     { title: 'Favorites', value: stats.favorites, icon: <StarIcon />, color: '#ffa726' },
-    { title: 'New Today', value: stats.unread, icon: <TrendingUpIcon />, color: '#66bb6a' },
+    { title: 'New Today', value: stats.newToday || 0, icon: <TrendingUpIcon />, color: '#66bb6a' },
   ];
 
   return (
