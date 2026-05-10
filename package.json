@@ -21,19 +21,19 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.22.1",
+    "axios": "^1.16.0",
+    "body-parser": "^1.20.4",
+    "cheerio": "^1.2.0",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
-    "axios": "^1.6.0",
-    "cheerio": "^1.0.0-rc.12",
-    "node-cron": "^3.0.3",
-    "body-parser": "^1.20.4",
+    "express": "^4.22.1",
     "lowdb": "^1.0.0",
-    "web-push": "^3.6.6",
-    "puppeteer": "^24.15.0"
+    "node-cron": "^3.0.3",
+    "puppeteer": "^24.15.0",
+    "web-push": "^3.6.6"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1",
-    "concurrently": "^8.2.2"
+    "concurrently": "^8.2.2",
+    "nodemon": "^3.0.1"
   }
 }

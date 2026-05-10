@@ -3,17 +3,17 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.30.3",
-    "axios": "^1.13.5",
-    "@mui/material": "^5.14.18",
-    "@mui/icons-material": "^5.14.18",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.14.18",
+    "@mui/material": "^5.14.18",
+    "axios": "^1.16.0",
     "leaflet": "^1.9.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-leaflet": "^4.2.1",
     "react-leaflet-draw": "^0.20.4",
+    "react-router-dom": "^6.30.3",
     "recharts": "^2.10.1"
   },
   "scripts": {
@@ -41,6 +41,12 @@
   },
   "devDependencies": {
     "react-scripts": "5.0.1"
+  },
+  "overrides": {
+    "nth-check": "^2.1.1",
+    "postcss": "^8.4.31",
+    "serialize-javascript": "^6.0.2 || ^7.0.5",
+    "underscore": "^1.13.7"
   },
   "proxy": "http://localhost:3001"
 }
