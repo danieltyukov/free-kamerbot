@@ -36,7 +36,8 @@ async function scrapePararius(settings) {
         const slug = urlParts.slice(-2).join('-') || Date.now().toString();
         const id = `pararius-${slug}`;
         
-        if (title && price) {
+        // Sanity floor: realistic NL rents start well above €50/month.
+        if (title && price >= 50) {
           listings.push({
             id,
             title,

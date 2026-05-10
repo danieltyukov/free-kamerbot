@@ -14,6 +14,8 @@ import InputAdornment from '@mui/material/InputAdornment';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Paper from '@mui/material/Paper';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -21,12 +23,17 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import SearchIcon from '@mui/icons-material/Search';
 import ReplyIcon from '@mui/icons-material/Reply';
 import SearchOffIcon from '@mui/icons-material/SearchOff';
+import CleaningServicesIcon from '@mui/icons-material/CleaningServices';
 
 function Listings() {
   const [listings, setListings] = useState([]);
   const [filteredListings, setFilteredListings] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [platformFilter, setPlatformFilter] = useState('all');
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+
+  const notify = (message, severity = 'success') =>
+    setSnackbar({ open: true, message, severity });
 
   useEffect(() => {
     fetchListings();
@@ -97,20 +104,41 @@ function Listings() {
     try {
       const response = await axios.post(`/api/auto-reply/${id}`);
       if (response.data.success) {
-        alert('Auto-reply sent successfully!');
+        notify('Auto-reply sent successfully', 'success');
       } else {
-        alert('Failed to send auto-reply: ' + response.data.message);
+        notify('Failed to send auto-reply: ' + response.data.message, 'error');
       }
     } catch (error) {
-      alert('Error sending auto-reply: ' + error.message);
+      notify('Error sending auto-reply: ' + error.message, 'error');
+    }
+  };
+
+  const cleanInvalid = async () => {
+    try {
+      const res = await axios.delete('/api/listings?onlyInvalid=true');
+      notify(`Removed ${res.data.removed} suspicious listing(s)`, 'success');
+      fetchListings();
+    } catch (error) {
+      notify('Cleanup failed: ' + error.message, 'error');
     }
   };
 
   return (
     <Box>
-      <Typography variant="h4" gutterBottom>
-        Listings ({filteredListings.length})
-      </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1, flexWrap: 'wrap', gap: 2 }}>
+        <Typography variant="h4">
+          Listings ({filteredListings.length})
+        </Typography>
+        <Button
+          variant="outlined"
+          color="secondary"
+          startIcon={<CleaningServicesIcon />}
+          onClick={cleanInvalid}
+          size="small"
+        >
+          Clean up bad data
+        </Button>
+      </Box>
 
       <Paper sx={{ p: 2.5, mb: 3 }}>
         <TextField
@@ -298,6 +326,22 @@ function Listings() {
           </Typography>
         </Box>
       )}
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={() => setSnackbar(s => ({ ...s, open: false }))}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert
+          severity={snackbar.severity}
+          variant="filled"
+          onClose={() => setSnackbar(s => ({ ...s, open: false }))}
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }

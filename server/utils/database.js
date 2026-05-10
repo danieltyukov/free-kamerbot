@@ -1,8 +1,10 @@
 const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
+const fs = require('fs');
 const path = require('path');
 
 const dbPath = path.join(__dirname, '../../data/db.json');
+fs.mkdirSync(path.dirname(dbPath), { recursive: true });
 const adapter = new FileSync(dbPath);
 const db = low(adapter);
 

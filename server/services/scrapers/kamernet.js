@@ -39,8 +39,13 @@ async function scrapeKamernet(settings) {
         // Extract text content
         const text = $elem.text().trim();
         
-        // Parse price from text like "775 euro" or "€775"
-        const priceMatch = text.match(/(\d+)\s*euro|€\s*(\d+)/i);
+        // Parse price from text like "€775" or "775 euro" — require ≥3 digits to
+        // avoid matching unrelated numbers (e.g. "1 reaction", "1 month available").
+        // Also accept 2 digits but only when followed by a clear monthly suffix.
+        const priceMatch =
+          text.match(/€\s*(\d{3,5})|(\d{3,5})\s*euro/i) ||
+          text.match(/€\s*(\d{2,5})\s*\/?\s*(?:month|maand|p\/?m)/i) ||
+          text.match(/(\d{2,5})\s*euro\s*\/?\s*(?:month|maand|p\/?m)/i);
         const price = priceMatch ? parseInt(priceMatch[1] || priceMatch[2]) : 0;
         
         // Parse size from text like "18 m²" or "18m2"
@@ -58,7 +63,9 @@ async function scrapeKamernet(settings) {
         // Generate stable ID from URL
         const id = `kamernet-${href.split('/').slice(-1)[0]}`;
         
-        if (price > 0 && title) {
+        // Sanity floor: realistic NL rents start well above €50/month.
+        // Anything below is almost certainly a parse error (deposit, fee, time-ago, etc.).
+        if (price >= 50 && title) {
           listings.push({
             id,
             title,

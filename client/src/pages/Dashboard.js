@@ -70,7 +70,7 @@ function Dashboard() {
         <Skeleton variant="text" width={280} height={24} sx={{ mb: 3 }} />
         <Grid container spacing={3}>
           {[0, 1, 2, 3].map((i) => (
-            <Grid item xs={12} sm={6} md={3} key={i}>
+            <Grid item xs={12} sm={6} md={6} lg={3} key={i}>
               <Skeleton variant="rounded" height={160} sx={{ borderRadius: 4 }} />
             </Grid>
           ))}
@@ -108,7 +108,7 @@ function Dashboard() {
 
       <Grid container spacing={3}>
         {statCards.map((card, index) => (
-          <Grid item xs={12} sm={6} md={3} key={index}>
+          <Grid item xs={12} sm={6} md={6} lg={3} key={index}>
             <Card
               sx={{
                 background: GRADIENTS[index],

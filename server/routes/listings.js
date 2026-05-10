@@ -114,6 +114,28 @@ router.put('/:id/favorite', (req, res) => {
   }
 });
 
+// Bulk delete: ?onlyInvalid=true removes listings with implausibly low price
+// (parse errors). Without the flag, deletes ALL listings.
+router.delete('/', (req, res) => {
+  try {
+    const db = getDb();
+    const onlyInvalid = req.query.onlyInvalid === 'true';
+    const before = db.get('listings').size().value();
+
+    if (onlyInvalid) {
+      db.set('listings', db.get('listings').filter(l => (l.price || 0) >= 50).value()).write();
+    } else {
+      db.set('listings', []).write();
+    }
+
+    const after = db.get('listings').size().value();
+    res.json({ success: true, removed: before - after, remaining: after });
+  } catch (error) {
+    console.error('Error bulk-deleting listings:', error.message);
+    res.status(500).json({ error: 'Failed to bulk-delete listings' });
+  }
+});
+
 // Delete listing
 router.delete('/:id', (req, res) => {
   try {

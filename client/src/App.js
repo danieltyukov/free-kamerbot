@@ -321,10 +321,10 @@ function AppContent() {
         component="main"
         sx={{
           flexGrow: 1,
+          minWidth: 0,
           minHeight: '100vh',
           mt: isDesktop ? 0 : 8,
           p: { xs: 2, sm: 3, md: 4 },
-          maxWidth: isDesktop ? `calc(100% - ${DRAWER_WIDTH}px)` : '100%',
         }}
       >
         <Routes>
@@ -344,7 +344,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Router>
+      <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <AppContent />
       </Router>
     </ThemeProvider>
